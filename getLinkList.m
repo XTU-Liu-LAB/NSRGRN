@@ -1,0 +1,24 @@
+function [linkList, diff] = getLinkList()
+    global data;
+    bc = getBalanceConcentration(data);
+    diff = data - bc;
+    diff = abs(diff);
+    
+    % reverse regulatory direction
+%     diff = diff';
+    
+    % set the main diagonal to 0
+    diff(logical(eye(size(diff)))) = 0;    
+    netsize = size(data, 1);
+    linkList = zeros(netsize * netsize, 3);
+    lineNum = 1;
+    for i = 1 : netsize
+        for j = 1 : netsize
+            linkList(lineNum, 1) = i;
+            linkList(lineNum, 2) = j;
+            linkList(lineNum, 3) = diff(j, i);
+            lineNum = lineNum + 1;
+        end
+    end
+    linkList = sortrows(linkList, -3);
+end
